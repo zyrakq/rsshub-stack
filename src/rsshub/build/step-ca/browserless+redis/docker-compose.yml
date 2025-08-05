@@ -1,0 +1,63 @@
+services:
+  rsshub:
+    container_name: rsshub
+    image: diygod/rsshub
+    restart: always
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      CACHE_TYPE: ${CACHE_TYPE:-redis}
+      VIRTUAL_PORT: ${VIRTUAL_PORT:-1200}
+      VIRTUAL_HOST: ${VIRTUAL_HOST}
+      LETSENCRYPT_HOST: ${LETSENCRYPT_HOST}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      PUPPETEER_WS_ENDPOINT: ${PUPPETEER_WS_ENDPOINT:-"ws://rsshub-browserless:3000"}
+      REDIS_URL: ${REDIS_URL:-"redis://rsshub-redis:6379/"}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1200/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - rsshub-network
+      - step-ca-network
+    depends_on:
+      - rsshub-browserless
+      - rsshub-redis
+  rsshub-browserless:
+    container_name: rsshub-browserless
+    image: browserless/chrome
+    restart: always
+    ulimits:
+      core:
+        hard: 0
+        soft: 0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/pressure"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - rsshub-network
+  rsshub-redis:
+    container_name: rsshub-redis
+    image: redis:alpine
+    restart: always
+    volumes:
+      - rsshub-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+    networks:
+      - rsshub-network
+networks:
+  rsshub-network:
+    name: rsshub-network
+  step-ca-network:
+    name: step-ca-network
+    external: true
+volumes:
+  rsshub-redis-data:
+    name: rsshub-redis-data

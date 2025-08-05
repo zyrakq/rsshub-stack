@@ -1,0 +1,21 @@
+services:
+  rsshub:
+    container_name: rsshub
+    image: diygod/rsshub
+    restart: always
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      CACHE_TYPE: ${CACHE_TYPE:-none}
+      ACCESS_KEY: ${ACCESS_KEY:-rsshub}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1200/healthz", "CMD", "curl", "-f", "http://localhost:1200/healthz?key=${ACCESS_KEY}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - rsshub-network
+    ports:
+      - "1200:1200"
+networks:
+  rsshub-network:
+    name: rsshub-network

@@ -1,0 +1,14 @@
+services:
+  redis:
+    networks:
+      - rsshub-workspace-network
+  browserless:
+    networks:
+      - rsshub-workspace-network
+  rsshub:
+    networks:
+      - rsshub-workspace-network
+
+networks:
+  rsshub-workspace-network:
+    external: true

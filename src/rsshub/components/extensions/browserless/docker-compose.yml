@@ -1,0 +1,26 @@
+services:
+  rsshub-browserless:
+    container_name: rsshub-browserless
+    image: browserless/chrome
+    restart: always
+    ulimits:
+      core:
+        hard: 0
+        soft: 0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/pressure"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - rsshub-network
+
+  rsshub:
+    environment:
+      PUPPETEER_WS_ENDPOINT: ${PUPPETEER_WS_ENDPOINT:-"ws://rsshub-browserless:3000"}
+    depends_on:
+      - rsshub-browserless
+
+networks:
+  rsshub-network:
+    name: rsshub-network

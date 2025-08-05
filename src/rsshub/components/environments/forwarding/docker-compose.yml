@@ -1,0 +1,4 @@
+services:
+  rsshub:
+    ports:
+      - "1200:1200"

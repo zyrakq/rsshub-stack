@@ -1,0 +1,6 @@
+services:
+  rsshub:
+    environment:
+      ACCESS_KEY: ${ACCESS_KEY:-rsshub}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1200/healthz?key=${ACCESS_KEY}"]

@@ -1,0 +1,41 @@
+version: "1.0"
+groups:
+  browsers:
+    description: "Browsers"
+    extensions:
+      - browserless
+  
+  caches:
+    description: "Memory-based caches"
+    extensions:
+      - redis
+  
+  guard:
+    description: "Guard"
+    extensions:
+      - guard
+  
+conflicts:
+combinations:
+  - name: "browserless+guard"
+    extensions: ["browserless", "guard"]
+    description: "-"
+  - name: "browserless+redis"
+    extensions: ["browserless", "redis"]
+    description: "-"
+  - name: "guard+redis"
+    extensions: ["guard", "redis"]
+    description: "-"
+  - name: "browserless+guard+redis"
+    extensions: ["browserless", "guard", "redis"]
+    description: "-"
+
+
+naming:
+  separator: "+"
+  sort: truey
+
+metadata:
+  created: "2025-01-20"
+  description: "Extension compatibility configuration for RssHub modular system"
+  author: "RssHub Stack"

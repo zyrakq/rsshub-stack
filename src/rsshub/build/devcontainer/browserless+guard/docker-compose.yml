@@ -1,0 +1,46 @@
+services:
+  rsshub:
+    container_name: rsshub
+    image: diygod/rsshub
+    restart: always
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      CACHE_TYPE: ${CACHE_TYPE:-none}
+      PUPPETEER_WS_ENDPOINT: ${PUPPETEER_WS_ENDPOINT:-"ws://rsshub-browserless:3000"}
+      ACCESS_KEY: ${ACCESS_KEY:-rsshub}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1200/healthz", "CMD", "curl", "-f", "http://localhost:1200/healthz?key=${ACCESS_KEY}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - rsshub-network
+      - rsshub-workspace-network
+    depends_on:
+      - rsshub-browserless
+  redis:
+    networks:
+      - rsshub-workspace-network
+  browserless:
+    networks:
+      - rsshub-workspace-network
+  rsshub-browserless:
+    container_name: rsshub-browserless
+    image: browserless/chrome
+    restart: always
+    ulimits:
+      core:
+        hard: 0
+        soft: 0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/pressure"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - rsshub-network
+networks:
+  rsshub-network:
+    name: rsshub-network
+  rsshub-workspace-network:
+    external: true

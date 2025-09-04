@@ -2,10 +2,15 @@ services:
   rsshub:
     container_name: rsshub
     image: diygod/rsshub
-    restart: always
+    restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       CACHE_TYPE: ${CACHE_TYPE:-none}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: 3
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:1200/healthz"]
       interval: 30s

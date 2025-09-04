@@ -2,7 +2,7 @@ services:
   rsshub:
     container_name: rsshub
     image: diygod/rsshub
-    restart: always
+    restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       CACHE_TYPE: ${CACHE_TYPE:-redis}
@@ -12,6 +12,11 @@ services:
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
       ACCESS_KEY: ${ACCESS_KEY:-rsshub}
       REDIS_URL: ${REDIS_URL:-"redis://rsshub-redis:6379/"}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: 3
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:1200/healthz", "CMD", "curl", "-f", "http://localhost:1200/healthz?key=${ACCESS_KEY}"]
       interval: 30s
